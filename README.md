@@ -97,7 +97,7 @@ flutter run
 
 ## 👨‍💻 Author
 
-Abhinav Kumar
+Abhinav Kumar, Mayukh Mandal
 B.Tech CSE (Data Science)
 
 ---
