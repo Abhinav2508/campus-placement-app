@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/profile_model.dart';
 import '../services/profile_service.dart';
 import '../services/resume_service.dart';
 import '../main.dart';
+import 'admin_panel_screen.dart';
 import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -99,6 +101,17 @@ setState(() {
 
 }
 
+Future<void> viewResume(String url) async {
+final uri = Uri.parse(url);
+final opened = await launchUrl(uri, webOnlyWindowName: '_blank');
+
+if (!opened && mounted) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Could not open resume")),
+  );
+}
+}
+
 @override
 Widget build(BuildContext context) {
 return Scaffold(
@@ -119,6 +132,9 @@ appBar: AppBar(title: const Text("Profile")),
       }
 
       final profile = snapshot.data!;
+      final avatarInitial = profile.name.trim().isNotEmpty
+          ? profile.name.trim()[0].toUpperCase()
+          : "U";
 
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -146,7 +162,7 @@ appBar: AppBar(title: const Text("Profile")),
                     radius: 42,
                     backgroundColor: const Color(0xffe8f0ff),
                     child: Text(
-                      profile.name[0],
+                      avatarInitial,
                       style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -238,7 +254,13 @@ appBar: AppBar(title: const Text("Profile")),
                   OutlinedButton(
                     onPressed: uploadResume,
                     child: const Text("Upload"),
-                  )
+                  ),
+                  const SizedBox(width: 8),
+                  if (profile.resumeUrl != null && profile.resumeUrl!.isNotEmpty)
+                    OutlinedButton(
+                      onPressed: () => viewResume(profile.resumeUrl!),
+                      child: const Text("View"),
+                    ),
                 ],
               ),
             ),
@@ -270,6 +292,25 @@ appBar: AppBar(title: const Text("Profile")),
             ),
 
             const SizedBox(height: 12),
+
+            if (profile.isAdmin)
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
+                  );
+                },
+                icon: const Icon(Icons.admin_panel_settings),
+                label: const Text("Admin Panel"),
+              ),
+
+            if (profile.isAdmin)
+              const SizedBox(height: 12),
 
             // ================= LOGOUT =================
             OutlinedButton.icon(

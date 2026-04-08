@@ -18,15 +18,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework',
-    'placement',
+    'rest_framework',    'corsheaders',    'placement',
 ]
 
 # ---------------- MIDDLEWARE ----------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',    'corsheaders.middleware.CorsMiddleware',    'django.middleware.common.CommonMiddleware',
 
     # IMPORTANT for Flutter (no CSRF blocking)
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -104,6 +102,12 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# =====================================================
+# CORS SETTINGS (Allow Flutter Web / Browser Requests)
+# =====================================================
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 import os
 

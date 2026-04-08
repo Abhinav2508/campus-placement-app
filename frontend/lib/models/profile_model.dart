@@ -4,6 +4,8 @@ class ProfileModel {
   final String branch;
   final double cgpa;
   final String skills;
+  final String? resumeUrl;
+  final bool isAdmin;
 
   ProfileModel({
     required this.name,
@@ -11,6 +13,8 @@ class ProfileModel {
     required this.branch,
     required this.cgpa,
     required this.skills,
+    this.resumeUrl,
+    required this.isAdmin,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class ProfileModel {
       branch: json['branch'],
       cgpa: double.parse(json['cgpa'].toString()),
       skills: json['skills'],
+      resumeUrl: json['resume_url'],
+      isAdmin: json['is_admin'] ?? false,
     );
   }
 

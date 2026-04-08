@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,13 +13,14 @@ class ResumeService {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
+        withData: true,
       );
 
       if (result == null) {
         return "Cancelled";
       }
 
-      File file = File(result.files.single.path!);
+      final pickedFile = result.files.single;
 
       // TOKEN
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -34,9 +35,29 @@ class ResumeService {
 
       request.headers['Authorization'] = 'Bearer $token';
 
-      request.files.add(
-        await http.MultipartFile.fromPath('resume', file.path),
-      );
+      if (kIsWeb) {
+        final bytes = pickedFile.bytes;
+        if (bytes == null) {
+          return "Could not read selected file";
+        }
+
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'resume',
+            bytes,
+            filename: pickedFile.name,
+          ),
+        );
+      } else {
+        final path = pickedFile.path;
+        if (path == null) {
+          return "Could not read selected file path";
+        }
+
+        request.files.add(
+          await http.MultipartFile.fromPath('resume', path),
+        );
+      }
 
       var response = await request.send();
 

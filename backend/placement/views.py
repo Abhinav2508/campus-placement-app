@@ -1,6 +1,9 @@
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import viewsets
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -11,6 +14,17 @@ from .models import Student, Company, Application
 from .serializers import StudentSerializer
 from .serializers import MyApplicationSerializer
 from .serializers import ProfileSerializer
+from .serializers import AdminUserSerializer
+from .serializers import AdminStudentSerializer
+from .serializers import AdminCompanySerializer
+from .serializers import AdminApplicationSerializer
+
+
+# ================= ROOT LANDING =================
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_root(request):
+    return redirect('/admin/')
 
 
 # ================= HELPER FUNCTION =================
@@ -36,10 +50,32 @@ def check_student_eligibility(student, company):
     return True, "Eligible"
 
 
+def get_or_create_student_profile(user):
+    student, _ = Student.objects.get_or_create(
+        user=user,
+        defaults={
+            "name": (user.first_name or user.username).strip(),
+            "roll_no": "",
+            "branch": "",
+            "cgpa": 0.0,
+            "skills": "",
+        },
+    )
+    return student
+
+
 # ================= GET ALL STUDENTS =================
 @api_view(['GET'])
 def get_students(request):
     students = Student.objects.all()
+    serializer = StudentSerializer(students, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def admin_students(request):
+    students = Student.objects.all().order_by('name')
     serializer = StudentSerializer(students, many=True)
     return Response(serializer.data)
 
@@ -78,11 +114,7 @@ def get_companies(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def company_detail(request, company_id):
-
-    try:
-        student = Student.objects.get(user=request.user)
-    except Student.DoesNotExist:
-        return Response({"message": "Student profile not found"}, status=400)
+    student = get_or_create_student_profile(request.user)
 
     try:
         company = Company.objects.get(id=company_id)
@@ -131,11 +163,7 @@ def add_student(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def eligible_students(request, company_id):
-
-    try:
-        student = Student.objects.get(user=request.user)
-    except Student.DoesNotExist:
-        return Response({"eligible": False, "reason": "Student profile not found"})
+    student = get_or_create_student_profile(request.user)
 
     try:
         company = Company.objects.get(id=company_id)
@@ -154,11 +182,7 @@ def eligible_students(request, company_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def apply_company(request, company_id):
-
-    try:
-        student = Student.objects.get(user=request.user)
-    except Student.DoesNotExist:
-        return Response({"message": "Student profile not found"}, status=400)
+    student = get_or_create_student_profile(request.user)
 
     try:
         company = Company.objects.get(id=company_id)
@@ -195,21 +219,47 @@ from .serializers import ProfileSerializer
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def my_profile(request):
-    try:
-        student = Student.objects.get(user=request.user)
-        serializer = ProfileSerializer(student)
-        return Response(serializer.data)
+    student = get_or_create_student_profile(request.user)
+    serializer = ProfileSerializer(student)
+    data = serializer.data
+    data["resume_url"] = request.build_absolute_uri(student.resume.url) if student.resume else None
+    data["is_admin"] = request.user.is_staff
+    return Response(data)
 
-    except Student.DoesNotExist:
-        return Response({"message": "Profile not found"}, status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def admin_check(request):
+    return Response({"is_admin": request.user.is_staff})
+
+
+class AdminUserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('id')
+    serializer_class = AdminUserSerializer
+    permission_classes = [IsAdminUser]
+
+
+class AdminStudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.select_related('user').all().order_by('name')
+    serializer_class = AdminStudentSerializer
+    permission_classes = [IsAdminUser]
+
+
+class AdminCompanyViewSet(viewsets.ModelViewSet):
+    queryset = Company.objects.all().order_by('name')
+    serializer_class = AdminCompanySerializer
+    permission_classes = [IsAdminUser]
+
+
+class AdminApplicationViewSet(viewsets.ModelViewSet):
+    queryset = Application.objects.select_related('student', 'company').all().order_by('-applied_at')
+    serializer_class = AdminApplicationSerializer
+    permission_classes = [IsAdminUser]
 # ================= Update Profile =================
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
-    try:
-        student = Student.objects.get(user=request.user)
-    except Student.DoesNotExist:
-        return Response({"error": "Student not found"}, status=404)
+    student = get_or_create_student_profile(request.user)
 
     # update name in auth user
     name = request.data.get("name")
@@ -231,11 +281,7 @@ def update_profile(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def dashboard_data(request):
-
-    try:
-        student = Student.objects.get(user=request.user)
-    except Student.DoesNotExist:
-        return Response({"error": "Student profile not found"}, status=404)
+    student = get_or_create_student_profile(request.user)
 
     # 1️ Eligible companies count
     companies = Company.objects.all()
@@ -277,11 +323,7 @@ def dashboard_data(request):
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
 def upload_resume(request):
-
-    try:
-        student = request.user.student
-    except:
-        return Response({"error": "Student profile not found"}, status=404)
+    student = get_or_create_student_profile(request.user)
 
     if 'resume' not in request.FILES:
         return Response({"error": "No file uploaded"}, status=400)

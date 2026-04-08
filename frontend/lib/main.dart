@@ -46,6 +46,10 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = true);
 
     var url = Uri.parse("http://127.0.0.1:8000/api/login/");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Clear any previous session to avoid stale-token user mixups.
+    await prefs.remove("token");
 
     try {
       var response = await http.post(
@@ -62,7 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
 
-        SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString("token", data["access"]);
 
         Navigator.pushReplacement(
@@ -70,11 +73,13 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (_) => const DashboardScreen()),
         );
       } else {
+        await prefs.remove("token");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Invalid Credentials")),
         );
       }
     } catch (e) {
+      await prefs.remove("token");
       setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Cannot connect to backend")),
