@@ -1,3 +1,3 @@
 [variables]
-NIXPACKS_BUILD_CMD = "pip install -r requirements.txt"
+NIXPACKS_BUILD_CMD = "pip install -r requirements.txt && python manage.py collectstatic --noinput"
 NIXPACKS_START_CMD = "gunicorn placement_backend.wsgi --log-file -"
