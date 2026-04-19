@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
+from django.http import HttpResponse
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -11,8 +12,10 @@ from .serializers import ResumeUploadSerializer
 from .models import Student, Company, Application, SavedJob, Notification, PasswordResetOTP
 from .serializers import StudentSerializer, CompanySerializer
 from .serializers import MyApplicationSerializer, AdminApplicationSerializer
-from .serializers import MyApplicationSerializer
 from .serializers import ProfileSerializer
+
+def index(request):
+    return HttpResponse("<h1>Welcome to Campus Placement API</h1><p>The backend is running successfully. Please use the Flutter app to interact with the system.</p>")
 from .serializers import CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 

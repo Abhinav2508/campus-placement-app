@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
+    path('', views.index), # Root
     path('admin/', admin.site.urls),
 
     # ---------------- JWT AUTH ----------------
