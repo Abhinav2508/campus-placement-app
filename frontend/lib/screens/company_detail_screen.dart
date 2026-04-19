@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,7 +32,7 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
 
-    var url = Uri.parse("http://127.0.0.1:8000/api/company/${widget.companyId}/");
+    var url = Uri.parse("${AppConfig.baseUrl}/api/company/${widget.companyId}/");
 
     var response = await http.get(url, headers: {
       "Authorization": "Bearer $token",
@@ -51,7 +52,7 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     final res = await http.get(
-      Uri.parse("http://127.0.0.1:8000/api/saved/"),
+      Uri.parse("${AppConfig.baseUrl}/api/saved/"),
       headers: {"Authorization": "Bearer $token"},
     );
     if (res.statusCode == 200) {
@@ -66,7 +67,7 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     await http.post(
-      Uri.parse("http://127.0.0.1:8000/api/save/${widget.companyId}/"),
+      Uri.parse("${AppConfig.baseUrl}/api/save/${widget.companyId}/"),
       headers: {"Authorization": "Bearer $token"},
     );
     setState(() => isSaved = !isSaved);
@@ -82,7 +83,7 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
 
-    var url = Uri.parse("http://127.0.0.1:8000/api/apply/${widget.companyId}/");
+    var url = Uri.parse("${AppConfig.baseUrl}/api/apply/${widget.companyId}/");
 
     var response = await http.post(url, headers: {
       "Authorization": "Bearer $token",
@@ -345,3 +346,4 @@ class _CompanyDetailScreenState extends State<CompanyDetailScreen> {
     );
   }
 }
+

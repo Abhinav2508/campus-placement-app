@@ -194,3 +194,4 @@ class _AdminAddCompanyScreenState extends State<AdminAddCompanyScreen> {
     );
   }
 }
+

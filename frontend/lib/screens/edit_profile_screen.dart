@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -47,7 +48,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
 
-    var url = Uri.parse("http://127.0.0.1:8000/api/update-profile/");
+    var url = Uri.parse("${AppConfig.baseUrl}/api/update-profile/");
 
     var response = await http.put(
       url,
@@ -152,3 +153,4 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 }
+

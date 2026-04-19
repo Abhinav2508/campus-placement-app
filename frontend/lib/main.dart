@@ -12,6 +12,7 @@ import 'screens/notifications_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'splash_screen.dart';
 import 'screens/admin_dashboard_screen.dart';
+import 'config.dart';
 
 // ───────────────────────────────────────────────────────────────
 // GLOBAL THEME NOTIFIER
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> loginUser() async {
     setState(() => isLoading = true);
 
-    var url = Uri.parse("http://127.0.0.1:8000/api/login/");
+    var url = Uri.parse("${AppConfig.baseUrl}/api/login/");
 
     try {
       var response = await http.post(
@@ -210,7 +211,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     final res = await http.get(
-      Uri.parse("http://127.0.0.1:8000/api/notifications/"),
+      Uri.parse("${AppConfig.baseUrl}/api/notifications/"),
       headers: {"Authorization": "Bearer $token"},
     );
     if (res.statusCode == 200) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/admin_service.dart';
 
@@ -75,7 +76,7 @@ class _AdminApplicationsScreenState extends State<AdminApplicationsScreen> {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No resume uploaded")));
       return;
     }
-    String fullUrl = url.startsWith('http') ? url : "http://127.0.0.1:8000$url";
+    String fullUrl = url.startsWith('http') ? url : "${AppConfig.baseUrl}$url";
     final uri = Uri.parse(fullUrl);
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -129,3 +130,5 @@ class _AdminApplicationsScreenState extends State<AdminApplicationsScreen> {
     );
   }
 }
+
+

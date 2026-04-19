@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import '../config.dart';
 import 'company_detail_screen.dart';
 
 class CompaniesScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
     String? token = prefs.getString("token");
 
     final response = await http.get(
-      Uri.parse("http://127.0.0.1:8000/api/companies/"),
+      Uri.parse("${AppConfig.baseUrl}/api/companies/"),
       headers: {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",

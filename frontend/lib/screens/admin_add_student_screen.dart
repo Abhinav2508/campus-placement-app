@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,7 +37,7 @@ class _AdminAddStudentScreenState extends State<AdminAddStudentScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
 
-    final url = Uri.parse("http://127.0.0.1:8000/api/add-student/");
+    final url = Uri.parse("${AppConfig.baseUrl}/api/add-student/");
     final res = await http.post(
       url,
       headers: {
@@ -142,3 +143,5 @@ class _AdminAddStudentScreenState extends State<AdminAddStudentScreen> {
     );
   }
 }
+
+

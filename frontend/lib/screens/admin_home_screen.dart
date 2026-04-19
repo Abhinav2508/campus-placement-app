@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,7 +44,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     final res = await http.get(
-      Uri.parse("http://127.0.0.1:8000/api/admin/analytics/"),
+      Uri.parse("${AppConfig.baseUrl}/api/admin/analytics/"),
       headers: {"Authorization": "Bearer $token"},
     );
     if (res.statusCode == 200) {
@@ -254,3 +255,5 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 }
+
+

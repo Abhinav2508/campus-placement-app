@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -27,7 +28,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
 
     try {
       final res = await http.post(
-        Uri.parse("http://127.0.0.1:8000/api/reset-password/"),
+        Uri.parse("${AppConfig.baseUrl}/api/reset-password/"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "username": widget.username,
@@ -131,3 +132,5 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
     );
   }
 }
+
+

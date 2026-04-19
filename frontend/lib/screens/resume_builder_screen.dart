@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -27,7 +28,7 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString("token");
     final res = await http.get(
-      Uri.parse("http://127.0.0.1:8000/api/profile/"),
+      Uri.parse("${AppConfig.baseUrl}/api/profile/"),
       headers: {"Authorization": "Bearer $token"},
     );
     if (res.statusCode == 200) {
@@ -296,3 +297,5 @@ class _ResumeBuilderScreenState extends State<ResumeBuilderScreen> {
     );
   }
 }
+
+

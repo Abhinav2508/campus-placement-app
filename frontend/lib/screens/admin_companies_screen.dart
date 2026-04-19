@@ -81,3 +81,4 @@ class _AdminCompaniesScreenState extends State<AdminCompaniesScreen> {
     );
   }
 }
+

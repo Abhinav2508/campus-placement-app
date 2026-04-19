@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/profile_model.dart';
+import '../config.dart';
 
 class ProfileService {
 
-  static const String baseUrl = "http://127.0.0.1:8000/api";
+  static final String baseUrl = "${AppConfig.baseUrl}/api";
 
   static Future<ProfileModel> getProfile() async {
 

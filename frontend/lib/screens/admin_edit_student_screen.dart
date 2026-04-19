@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,7 +60,7 @@ class _AdminEditStudentScreenState extends State<AdminEditStudentScreen> {
     String? token = prefs.getString("token");
     int studentId = widget.studentData["id"];
 
-    final url = Uri.parse("http://127.0.0.1:8000/api/admin/student/$studentId/edit/");
+    final url = Uri.parse("${AppConfig.baseUrl}/api/admin/student/$studentId/edit/");
     final res = await http.put(
       url,
       headers: {
@@ -169,3 +170,5 @@ class _AdminEditStudentScreenState extends State<AdminEditStudentScreen> {
     );
   }
 }
+
+

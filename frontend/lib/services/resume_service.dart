@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import '../config.dart';
 
 class ResumeService {
 
@@ -29,7 +30,7 @@ class ResumeService {
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("http://127.0.0.1:8000/api/upload-resume/"),
+        Uri.parse("${AppConfig.baseUrl}/api/upload-resume/"),
       );
 
       request.headers['Authorization'] = 'Bearer $token';

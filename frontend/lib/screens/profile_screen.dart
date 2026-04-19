@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/profile_model.dart';
@@ -103,7 +104,7 @@ setState(() {
 
 Future<void> _launchURL(String url) async {
   if (url.isEmpty) return;
-  String fullUrl = url.startsWith('http') ? url : "http://127.0.0.1:8000$url";
+  String fullUrl = url.startsWith('http') ? url : "${AppConfig.baseUrl}$url";
   final uri = Uri.parse(fullUrl);
   try {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -386,3 +387,5 @@ appBar: AppBar(
 
 }
 }
+
+

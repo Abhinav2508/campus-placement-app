@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'verify_otp_screen.dart';
@@ -26,7 +27,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       final res = await http.post(
-        Uri.parse("http://127.0.0.1:8000/api/forgot-password/"),
+        Uri.parse("${AppConfig.baseUrl}/api/forgot-password/"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"username": usernameController.text.trim()}),
       );
@@ -119,3 +120,5 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 }
+
+
