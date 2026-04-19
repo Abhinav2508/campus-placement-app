@@ -11,6 +11,10 @@ class Student(models.Model):
     branch = models.CharField(max_length=50)
     cgpa = models.FloatField()
     skills = models.TextField()
+    
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    linkedin = models.URLField(max_length=200, null=True, blank=True)
+    github = models.URLField(max_length=200, null=True, blank=True)
 
     resume = models.FileField(upload_to='resumes/', null=True, blank=True)
 
@@ -44,8 +48,15 @@ class Company(models.Model):
 
     required_skills = models.TextField()
     description = models.TextField()
-
     deadline = models.DateField()
+
+    logo_url = models.URLField(max_length=500, null=True, blank=True)
+    job_type = models.CharField(max_length=50, default='Full-Time')
+    work_mode = models.CharField(max_length=50, default='On-Site')
+    experience = models.CharField(max_length=50, default='Fresher')
+    about_company = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    posted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -86,3 +97,40 @@ class Application(models.Model):
 
     def __str__(self):
         return f"{self.student.username} - {self.company.name} - {self.status}"
+
+
+# ================= SAVED JOB =================
+class SavedJob(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['user', 'company']
+
+    def __str__(self):
+        return f"{self.user.username} saved {self.company.name}"
+
+
+# ================= NOTIFICATION =================
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.CharField(max_length=300)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username}: {self.message}"
+
+
+# ================= PASSWORD RESET OTP =================
+class PasswordResetOTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.otp}"

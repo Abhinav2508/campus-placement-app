@@ -6,6 +6,8 @@ import '../services/profile_service.dart';
 import '../services/resume_service.dart';
 import '../main.dart';
 import 'edit_profile_screen.dart';
+import 'resume_builder_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
 const ProfileScreen({super.key});
@@ -99,11 +101,39 @@ setState(() {
 
 }
 
+Future<void> _launchURL(String url) async {
+  if (url.isEmpty) return;
+  String fullUrl = url.startsWith('http') ? url : "http://127.0.0.1:8000$url";
+  final uri = Uri.parse(fullUrl);
+  try {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (e) {
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error: Could not open link.")));
+  }
+}
+
 @override
 Widget build(BuildContext context) {
 return Scaffold(
 backgroundColor: const Color(0xfff4f6fa),
-appBar: AppBar(title: const Text("Profile")),
+appBar: AppBar(
+  title: const Text("Profile"),
+  actions: [
+    ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (context, mode, _) {
+        return IconButton(
+          icon: Icon(mode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode),
+          tooltip: "Toggle Dark Mode",
+          onPressed: () {
+            themeNotifier.value =
+                mode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+          },
+        );
+      },
+    ),
+  ],
+),
 
 
   body: FutureBuilder<ProfileModel>(
@@ -189,6 +219,42 @@ appBar: AppBar(title: const Text("Profile")),
 
             const SizedBox(height: 20),
 
+            // ================= CONTACT INFO =================
+            sectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Contact Info", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  infoTile(Icons.email_outlined, "EMAIL", profile.email.isNotEmpty ? profile.email : "Not provided"),
+                  infoTile(Icons.phone_outlined, "PHONE", profile.phone.isNotEmpty ? profile.phone : "Not provided"),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // ================= SOCIAL LINKS =================
+            sectionCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Social Links", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  InkWell(
+                    onTap: () => _launchURL(profile.linkedin),
+                    child: infoTile(Icons.work_outline, "LINKEDIN", profile.linkedin.isNotEmpty ? profile.linkedin : "Not provided"),
+                  ),
+                  InkWell(
+                    onTap: () => _launchURL(profile.github),
+                    child: infoTile(Icons.code, "GITHUB", profile.github.isNotEmpty ? profile.github : "Not provided"),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
             // ================= SKILLS =================
             sectionCard(
               child: Column(
@@ -235,6 +301,12 @@ appBar: AppBar(title: const Text("Profile")),
                       ],
                     ),
                   ),
+                  if (profile.resumeUrl.isNotEmpty) 
+                    OutlinedButton(
+                      onPressed: () => _launchURL(profile.resumeUrl),
+                      child: const Text("View"),
+                    ),
+                  if (profile.resumeUrl.isNotEmpty) const SizedBox(width: 8),
                   OutlinedButton(
                     onPressed: uploadResume,
                     child: const Text("Upload"),
@@ -267,6 +339,26 @@ appBar: AppBar(title: const Text("Profile")),
               },
               icon: const Icon(Icons.edit),
               label: const Text("Edit Profile"),
+            ),
+
+            const SizedBox(height: 12),
+
+            // ================= RESUME BUILDER =================
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+                backgroundColor: Colors.indigo,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ResumeBuilderScreen()),
+                );
+              },
+              icon: const Icon(Icons.picture_as_pdf),
+              label: const Text("Generate Resume"),
             ),
 
             const SizedBox(height: 12),

@@ -20,6 +20,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController branchController;
   late TextEditingController cgpaController;
   late TextEditingController skillsController;
+  late TextEditingController phoneController;
+  late TextEditingController linkedinController;
+  late TextEditingController githubController;
 
   bool isLoading = false;
 
@@ -33,6 +36,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         TextEditingController(text: widget.profile.cgpa.toString());
     skillsController =
         TextEditingController(text: widget.profile.skills);
+    phoneController = TextEditingController(text: widget.profile.phone);
+    linkedinController = TextEditingController(text: widget.profile.linkedin);
+    githubController = TextEditingController(text: widget.profile.github);
   }
 
   Future<void> updateProfile() async {
@@ -54,6 +60,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         "branch": branchController.text,
         "cgpa": double.parse(cgpaController.text),
         "skills": skillsController.text,
+        "phone": phoneController.text,
+        "linkedin": linkedinController.text,
+        "github": githubController.text,
       }),
     );
 
@@ -103,6 +112,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: skillsController,
               decoration: const InputDecoration(
                   labelText: "Skills (comma separated)"),
+            ),
+
+            const SizedBox(height: 16),
+
+            TextField(
+              controller: phoneController,
+              decoration: const InputDecoration(labelText: "Phone Number"),
+              keyboardType: TextInputType.phone,
+            ),
+
+            const SizedBox(height: 16),
+
+            TextField(
+              controller: linkedinController,
+              decoration: const InputDecoration(labelText: "LinkedIn URL"),
+              keyboardType: TextInputType.url,
+            ),
+
+            const SizedBox(height: 16),
+
+            TextField(
+              controller: githubController,
+              decoration: const InputDecoration(labelText: "GitHub URL"),
+              keyboardType: TextInputType.url,
             ),
 
             const SizedBox(height: 30),

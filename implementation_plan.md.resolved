@@ -1,0 +1,66 @@
+# In-App Admin Portal Implementation Plan
+
+This plan outlines the steps to build an Admin Portal inside the Flutter application, allowing users with admin rights to manage companies, students, and applications.
+
+## User Review Required
+
+Please review this plan. This approach will:
+1. Let Admins log in using the same login screen as students.
+2. Route them to a distinct **Admin Dashboard** instead of the student dashboard.
+3. Allow admins to view/add companies, view applications, and optionally update application statuses.
+
+> [!IMPORTANT]
+> To test this, you will need a Superuser account. You can create one in the terminal using `python manage.py createsuperuser`.
+
+## Proposed Changes
+
+### Backend Components
+
+#### [MODIFY] backend/placement/serializers.py
+- Add `CustomTokenObtainPairSerializer` to return `is_staff` with the JWT token during login.
+- Add `CompanySerializer` and `ApplicationSerializer` if not already fully implemented.
+
+#### [MODIFY] backend/placement_backend/urls.py
+- Update the login URL to use a custom view that utilizes the new `CustomTokenObtainPairSerializer`.
+- Add new endpoints:
+  - `path('api/admin/dashboard/', views.admin_dashboard)`
+  - `path('api/admin/students/', views.admin_students)`
+  - `path('api/admin/applications/', views.admin_applications)`
+  - `path('api/admin/company/add/', views.add_company)`
+  - `path('api/admin/application/<int:id>/status/', views.update_application_status)`
+
+#### [MODIFY] backend/placement/views.py
+- Add `admin_dashboard` View (Returns counts: generic stats).
+- Add `admin_students` View.
+- Add `admin_applications` View.
+- Add `add_company` View.
+- Add `update_application_status` View.
+
+### Frontend Components
+
+#### [MODIFY] frontend/lib/main.dart
+- Update [loginUser()](file:///c:/Users/abhinav%20bhardwaj/Desktop/campus-placement-app/frontend/lib/main.dart#44-83) to read `is_staff` from the response.
+- Route `is_staff == true` users to `AdminDashboardScreen` instead of [DashboardScreen](file:///c:/Users/abhinav%20bhardwaj/Desktop/campus-placement-app/frontend/lib/main.dart#131-137).
+
+#### [NEW] frontend/lib/screens/admin_dashboard_screen.dart
+- Create `AdminDashboardScreen` with a Bottom Navigation Bar:
+  - **Home**: Shows statistics (total companies, total apps, etc.)
+  - **Companies**: Shows all companies. Has a (+) button to add a new company.
+  - **Applications**: Shows all students' applications and allows updating statuses (Shortlisted, Rejected, Selected).
+  - **Students**: List of all registered students.
+
+#### [NEW] frontend/lib/screens/admin_add_company_screen.dart
+- Form screen to add a new company (name, role, package, deadline, etc.).
+
+## Verification Plan
+
+### Automated Tests
+- No automated tests currently exist for the admin flow. We rely on manual verification.
+
+### Manual Verification
+1. **Create Superuser**: Run `python python manage.py createsuperuser` to create an admin account.
+2. **Login Simulation**: Open the Flutter app in Chrome, log in with the superuser credentials.
+3. **Verify Routing**: Ensure the user lands on the Admin Dashboard, not the Student Dashboard.
+4. **Data Verification**: Admins should be able to see the list of all students and applications.
+5. **Add Company**: Use the (+) button to add a new company and see it appear in the company list.
+6. **Student View**: Re-login as a student and verify the newly added company is visible to them.

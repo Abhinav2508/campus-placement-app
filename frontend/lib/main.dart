@@ -3,12 +3,20 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import 'screens/company_detail_screen.dart';
 import 'screens/my_applications_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/companies_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/saved_jobs_screen.dart';
+import 'screens/notifications_screen.dart';
+import 'screens/forgot_password_screen.dart';
 import 'splash_screen.dart';
+import 'screens/admin_dashboard_screen.dart';
+
+// ───────────────────────────────────────────────────────────────
+// GLOBAL THEME NOTIFIER
+// ───────────────────────────────────────────────────────────────
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 void main() {
   runApp(const PlacementApp());
@@ -19,9 +27,27 @@ class PlacementApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (context, mode, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          themeMode: mode,
+          theme: ThemeData(
+            useMaterial3: true,
+            colorSchemeSeed: Colors.indigo,
+            brightness: Brightness.light,
+            fontFamily: 'Roboto',
+          ),
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            colorSchemeSeed: Colors.indigo,
+            brightness: Brightness.dark,
+            fontFamily: 'Roboto',
+          ),
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }
@@ -65,20 +91,36 @@ class _LoginScreenState extends State<LoginScreen> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString("token", data["access"]);
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const DashboardScreen()),
-        );
+        bool isStaff = data["is_staff"] ?? false;
+        await prefs.setBool("is_staff", isStaff);
+
+        if (mounted) {
+          if (isStaff) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const AdminDashboardScreen()),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            );
+          }
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Invalid Credentials")),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Invalid Credentials")),
+          );
+        }
       }
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Cannot connect to backend")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Cannot connect to backend")),
+        );
+      }
     }
   }
 
@@ -117,6 +159,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       : const Text("Login"),
                 ),
               ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                  );
+                },
+                child: const Text("Forgot Password?", style: TextStyle(color: Colors.indigo)),
+              ),
             ],
           ),
         ),
@@ -138,31 +190,92 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
+  int unreadNotifications = 0;
 
   final List<Widget> screens = const [
     HomeScreen(),
     CompaniesScreen(),
+    SavedJobsScreen(),
     MyApplicationsScreen(),
     ProfileScreen(),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _fetchUnreadCount();
+  }
+
+  Future<void> _fetchUnreadCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    final res = await http.get(
+      Uri.parse("http://127.0.0.1:8000/api/notifications/"),
+      headers: {"Authorization": "Bearer $token"},
+    );
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      setState(() => unreadNotifications = data["unread_count"] ?? 0);
+    }
+  }
+
+  void _openNotifications() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+    ).then((_) {
+      setState(() => unreadNotifications = 0);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: screens[currentIndex],
+      // Global notification bell on home page
+      floatingActionButton: currentIndex == 0
+          ? Stack(
+              children: [
+                FloatingActionButton(
+                  onPressed: _openNotifications,
+                  backgroundColor: Colors.indigo,
+                  child: const Icon(Icons.notifications, color: Colors.white),
+                ),
+                if (unreadNotifications > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                          color: Colors.red, shape: BoxShape.circle),
+                      child: Text(
+                        "$unreadNotifications",
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  )
+              ],
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
+          setState(() => currentIndex = index);
+          if (index == 0) _fetchUnreadCount();
         },
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.indigo,
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.business), label: "Companies"),
+              icon: Icon(Icons.business), label: "Jobs"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bookmark), label: "Saved"),
           BottomNavigationBarItem(
               icon: Icon(Icons.description), label: "Applications"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),

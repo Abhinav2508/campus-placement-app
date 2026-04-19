@@ -22,18 +22,27 @@ class ApplicationTimelineCard extends StatelessWidget {
     }
   }
 
-  Widget buildStep(int step, String title) {
+  Widget buildStep(int step, String title, String? dateStr) {
     bool completed = getStageIndex() >= step;
+    bool isRejected = app.status.toLowerCase() == "rejected" && step == 4;
 
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 8,
-          backgroundColor: completed ? Colors.blue : Colors.grey[300],
-        ),
-        const SizedBox(height: 6),
-        Text(title, style: const TextStyle(fontSize: 11))
-      ],
+    return Expanded(
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 12,
+            backgroundColor: completed ? (isRejected ? Colors.red : Colors.green) : Colors.grey[300],
+            child: completed ? Icon(isRejected ? Icons.close : Icons.check, size: 14, color: Colors.white) : null,
+          ),
+          const SizedBox(height: 8),
+          Text(title, 
+            style: TextStyle(fontSize: 11, fontWeight: completed ? FontWeight.bold : FontWeight.normal),
+            textAlign: TextAlign.center,
+          ),
+          if (dateStr != null && dateStr.isNotEmpty)
+            Text(dateStr, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+        ],
+      ),
     );
   }
 
@@ -73,8 +82,8 @@ class ApplicationTimelineCard extends StatelessWidget {
                 ),
               ),
               Chip(
-                label: Text(app.status),
-                backgroundColor: Colors.blue[50],
+                label: Text(app.status.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87)),
+                backgroundColor: app.status.toLowerCase() == 'rejected' ? Colors.red[100] : (app.status.toLowerCase() == 'selected' ? Colors.green[100] : Colors.blue[50]),
               )
             ],
           ),
@@ -84,11 +93,12 @@ class ApplicationTimelineCard extends StatelessWidget {
           /// TIMELINE
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildStep(1, "Applied"),
-              buildStep(2, "Shortlisted"),
-              buildStep(3, "Interview"),
-              buildStep(4, "Result"),
+              buildStep(1, "Applied", app.appliedAt),
+              buildStep(2, "Shortlisted", app.shortlistedAt),
+              buildStep(3, "Interview", app.interviewAt),
+              buildStep(4, "Result", app.resultAt),
             ],
           ),
         ],
