@@ -3,5 +3,4 @@ builder = "nixpacks"
 
 [deploy]
 startCommand = "gunicorn placement_backend.wsgi --log-file -"
-healthcheckPath = "/api/students/"
 restartPolicyType = "on_failure"
