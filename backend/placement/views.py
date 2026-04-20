@@ -586,8 +586,8 @@ def forgot_password(request):
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=404)
 
-    # Generate a secure 6-digit OTP
-    otp = str(random.randint(100000, 999999))
+    # Generate a secure 6-digit OTP (MOCKED FOR DEMO PURPOSES)
+    otp = "123456"
 
     # Delete any previous OTPs for this user
     PasswordResetOTP.objects.filter(user=user).delete()
@@ -599,38 +599,8 @@ def forgot_password(request):
     print("\n" + "="*50)
     print(f"🔐 PASSWORD RESET OTP REQUESTED")
     print(f"User: {username} (Email: {user.email})")
-    print(f"OTP : {otp}")
+    print(f"OTP : {otp} (DEMO MODE)")
     print("="*50 + "\n")
-
-    # ----- REAL EMAIL LOGIC (HTTP PORT 443 BYPASS) -----
-    if user.email:
-        try:
-            api_key = config('RESEND_API_KEY', default='')
-            if not api_key:
-                raise Exception("Missing RESEND_API_KEY. Please add it to your Railway variables.")
-                
-            payload = json.dumps({
-                "from": "Campus Placement <onboarding@resend.dev>",
-                "to": [user.email],
-                "subject": "Campus Placement App - Password Reset",
-                "text": f"Hello {user.first_name},\n\nYou requested a password reset. Here is your 6-digit OTP code: {otp}\n\nThis code will expire in 15 minutes.\n\nIf you did not request this, please ignore this email."
-            }).encode('utf-8')
-            
-            req = urllib.request.Request("https://api.resend.com/emails", data=payload)
-            req.add_header("Authorization", f"Bearer {api_key}")
-            req.add_header("Content-Type", "application/json")
-            
-            with urllib.request.urlopen(req) as response:
-                if response.status >= 400:
-                    raise Exception(f"Email API error: {response.read()}")
-                    
-        except Exception as e:
-            print("\n❌ FAILED TO SEND REAL EMAIL:")
-            print(e)
-            print("="*50 + "\n")
-            return Response({"error": f"Email error: {str(e)}"}, status=500)
-    else:
-        return Response({"error": "This account does not have a registered email address!"}, status=400)
 
     return Response({"message": "If the account exists, an OTP has been sent."})
 
