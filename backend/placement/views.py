@@ -14,8 +14,10 @@ from .serializers import StudentSerializer, CompanySerializer
 from .serializers import MyApplicationSerializer, AdminApplicationSerializer
 from .serializers import ProfileSerializer
 
+from django.shortcuts import render
+
 def index(request):
-    return HttpResponse("<h1>Welcome to Campus Placement API</h1><p>The backend is running successfully. Please use the Flutter app to interact with the system.</p>")
+    return render(request, 'index.html')
 from .serializers import CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 

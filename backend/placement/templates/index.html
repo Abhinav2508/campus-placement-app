@@ -1,15 +1,21 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Placement App - Secure Your Future</title>
-    <meta name="description" content="Download the ultimate Campus Placement App. Track applications, discover new opportunities, and manage your placement process all in one place.">
+    <meta name="description"
+        content="Download the ultimate Campus Placement App. Track applications, discover new opportunities, and manage your placement process all in one place.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
+
 <body>
     <header class="glass-nav">
         <div class="nav-container">
@@ -30,11 +36,20 @@
         <section class="hero">
             <div class="hero-content">
                 <div class="hero-badge">v1.0.0 Now Available</div>
-                <h1 class="hero-title">Your Next Big Career Move Starts <span class="highlight-gradient">Here</span></h1>
-                <p class="hero-subtitle">The ultimate platform connecting college students with top recruiters. Track your applications, manage your resume, and secure your dream job.</p>
+                <h1 class="hero-title">Your Next Big Career Move Starts <span class="highlight-gradient">Here</span>
+                </h1>
+                <p class="hero-subtitle">The ultimate platform connecting college students with top recruiters. Track
+                    your applications, manage your resume, and secure your dream job.</p>
                 <div class="hero-actions">
-                    <a href="assets/campus-placement-app.apk" class="btn btn-primary btn-large btn-glow" download>
-                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <a href="{% static 'assets/campus-placement-app.apk' %}" class="btn btn-primary btn-large btn-glow"
+                        download>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
                         Download APK (Android)
                     </a>
                     <a href="#how-it-works" class="btn btn-outline btn-large">Installation Guide</a>
@@ -43,7 +58,8 @@
             <div class="hero-visual">
                 <div class="glow-orb orb-1"></div>
                 <div class="glow-orb orb-2"></div>
-                <img src="assets/app-mockup.png" alt="Campus Placement App Dashboard" class="app-mockup" id="hero-mockup">
+                <img src="{% static 'assets/app-mockup.png' %}" alt="Campus Placement App Dashboard" class="app-mockup"
+                    id="hero-mockup">
             </div>
         </section>
 
@@ -56,24 +72,42 @@
             <div class="feature-grid">
                 <div class="feature-card glass-card">
                     <div class="feature-icon bg-blue">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
                     </div>
                     <h3>Discover Companies</h3>
-                    <p>Browse through hundreds of recruiters, view their expected packages, required skills, and deadlines all in one unified dashboard.</p>
+                    <p>Browse through hundreds of recruiters, view their expected packages, required skills, and
+                        deadlines all in one unified dashboard.</p>
                 </div>
                 <div class="feature-card glass-card">
                     <div class="feature-icon bg-purple">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
                     </div>
                     <h3>Smart Resume Builder</h3>
-                    <p>Create ATS-friendly resumes within the app, highlighting your CGPA, projects, and skills to stand out to potential recruiters.</p>
+                    <p>Create ATS-friendly resumes within the app, highlighting your CGPA, projects, and skills to stand
+                        out to potential recruiters.</p>
                 </div>
                 <div class="feature-card glass-card">
                     <div class="feature-icon bg-green">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
                     </div>
                     <h3>Real-time Updates</h3>
-                    <p>Get instant notifications about application status changes, new opening announcements, and scheduled interview rounds.</p>
+                    <p>Get instant notifications about application status changes, new opening announcements, and
+                        scheduled interview rounds.</p>
                 </div>
             </div>
         </section>
@@ -84,28 +118,31 @@
                 <h2>How to <span class="highlight">Install</span></h2>
                 <p>Follow these simple steps to install the app on your Android device.</p>
             </div>
-            
+
             <div class="steps-container">
                 <div class="step-line"></div>
                 <div class="step">
                     <div class="step-number">1</div>
                     <div class="step-content glass-card">
                         <h3>Download the APK</h3>
-                        <p>Click on the download button to save the <code>campus-placement-app.apk</code> to your Android device.</p>
+                        <p>Click on the download button to save the <code>campus-placement-app.apk</code> to your
+                            Android device.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content glass-card">
                         <h3>Allow Unknown Sources</h3>
-                        <p>When opening the file, your browser may prompt you for security. Go to Settings and toggle on "Allow from this source".</p>
+                        <p>When opening the file, your browser may prompt you for security. Go to Settings and toggle on
+                            "Allow from this source".</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
                     <div class="step-content glass-card">
                         <h3>Install and Login</h3>
-                        <p>Tap "Install" on the Android installer popup. Once complete, open the app and login with your student credentials.</p>
+                        <p>Tap "Install" on the Android installer popup. Once complete, open the app and login with your
+                            student credentials.</p>
                     </div>
                 </div>
             </div>
@@ -117,7 +154,8 @@
                 <h2>Ready to Start Your Journey?</h2>
                 <p>Join thousands of other students. Secure your placement today.</p>
                 <div class="cta-actions">
-                    <a href="assets/campus-placement-app.apk" class="btn btn-primary btn-large btn-glow pulse-animation" download>Download Now (51.8 MB)</a>
+                    <a href="{% static 'assets/campus-placement-app.apk' %}"
+                        class="btn btn-primary btn-large btn-glow pulse-animation" download>Download Now (51.8 MB)</a>
                 </div>
             </div>
         </section>
@@ -137,13 +175,13 @@
         // Simple parallax effect for the hero mockup
         document.addEventListener('mousemove', (e) => {
             const mockup = document.getElementById('hero-mockup');
-            if(mockup) {
+            if (mockup) {
                 const x = (window.innerWidth - e.pageX * 2) / 90;
                 const y = (window.innerHeight - e.pageY * 2) / 90;
                 mockup.style.transform = `translate(${x}px, ${y}px) rotateX(${y * 0.5}deg) rotateY(${-x * 0.5}deg)`;
             }
         });
-        
+
         // Smooth scrolling for Anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -155,4 +193,5 @@
         });
     </script>
 </body>
+
 </html>
