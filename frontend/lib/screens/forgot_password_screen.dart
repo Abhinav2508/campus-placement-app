@@ -30,15 +30,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         Uri.parse("${AppConfig.baseUrl}/api/forgot-password/"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"username": usernameController.text.trim()}),
-      );
+      ).timeout(const Duration(seconds: 30), onTimeout: () {
+        throw Exception("Request timed out. Please try again.");
+      });
 
       setState(() => isLoading = false);
 
-      if (res.statusCode == 200 || res.statusCode == 404) {
-        // We navigate even on 404 to prevent username enumeration harvesting
+      if (res.statusCode == 200) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("If the account exists, an OTP was sent.")),
+            const SnackBar(content: Text("OTP sent! Check your email.")),
           );
           Navigator.push(
             context,
@@ -49,8 +50,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         }
       } else {
         if (mounted) {
+          String errorMsg = "Failed to process request.";
+          try {
+            final body = jsonDecode(res.body);
+            errorMsg = body["error"] ?? errorMsg;
+          } catch (_) {}
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Failed to process request.")),
+            SnackBar(content: Text(errorMsg)),
           );
         }
       }
@@ -58,7 +64,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Cannot connect to server")),
+          SnackBar(content: Text(e.toString().replaceAll("Exception: ", ""))),
         );
       }
     }
@@ -120,5 +126,3 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 }
-
-
