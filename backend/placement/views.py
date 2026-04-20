@@ -614,6 +614,9 @@ def forgot_password(request):
             print("\n❌ FAILED TO SEND REAL EMAIL:")
             print(e)
             print("="*50 + "\n")
+            return Response({"error": f"Email error: {str(e)}"}, status=500)
+    else:
+        return Response({"error": "This account does not have a registered email address!"}, status=400)
 
     return Response({"message": "If the account exists, an OTP has been sent."})
 
