@@ -567,9 +567,11 @@ def admin_analytics(request):
 
 # ================= FORGOT PASSWORD (OTP GENERATION) =================
 import random
+import json
+import urllib.request
 from django.utils import timezone
 from datetime import timedelta
-from django.core.mail import send_mail
+from decouple import config
 from django.conf import settings
 
 @api_view(['POST'])
@@ -600,16 +602,28 @@ def forgot_password(request):
     print(f"OTP : {otp}")
     print("="*50 + "\n")
 
-    # ----- REAL EMAIL LOGIC -----
+    # ----- REAL EMAIL LOGIC (HTTP PORT 443 BYPASS) -----
     if user.email:
         try:
-            send_mail(
-                subject='Campus Placement App - Password Reset',
-                message=f'Hello {user.first_name},\n\nYou requested a password reset. Here is your 6-digit OTP code: {otp}\n\nThis code will expire in 15 minutes.\n\nIf you did not request this, please ignore this email.',
-                from_email=getattr(settings, 'EMAIL_HOST_USER', 'noreply@campus.com'),
-                recipient_list=[user.email],
-                fail_silently=False, 
-            )
+            api_key = config('RESEND_API_KEY', default='')
+            if not api_key:
+                raise Exception("Missing RESEND_API_KEY. Please add it to your Railway variables.")
+                
+            payload = json.dumps({
+                "from": "Campus Placement <onboarding@resend.dev>",
+                "to": [user.email],
+                "subject": "Campus Placement App - Password Reset",
+                "text": f"Hello {user.first_name},\n\nYou requested a password reset. Here is your 6-digit OTP code: {otp}\n\nThis code will expire in 15 minutes.\n\nIf you did not request this, please ignore this email."
+            }).encode('utf-8')
+            
+            req = urllib.request.Request("https://api.resend.com/emails", data=payload)
+            req.add_header("Authorization", f"Bearer {api_key}")
+            req.add_header("Content-Type", "application/json")
+            
+            with urllib.request.urlopen(req) as response:
+                if response.status >= 400:
+                    raise Exception(f"Email API error: {response.read()}")
+                    
         except Exception as e:
             print("\n❌ FAILED TO SEND REAL EMAIL:")
             print(e)
