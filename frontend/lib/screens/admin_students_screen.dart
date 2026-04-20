@@ -37,9 +37,6 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return const Center(child: CircularProgressIndicator());
-    if (students.isEmpty) return const Center(child: Text("No students found"));
-
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,
@@ -55,63 +52,68 @@ class _AdminStudentsScreenState extends State<AdminStudentsScreen> {
           }
         },
       ),
-      body: RefreshIndicator(
-        onRefresh: _fetchStudents,
-        child: ListView.builder(
-          itemCount: students.length,
-          itemBuilder: (context, index) {
-            final s = students[index];
-            final name = s["name"] != null && s["name"].toString().trim().isNotEmpty
-                ? s["name"].toString()
-                : "Unnamed Student";
+      body: isLoading 
+        ? const Center(child: CircularProgressIndicator())
+        : (students.isEmpty 
+            ? const Center(child: Text("No students found"))
+            : RefreshIndicator(
+                onRefresh: _fetchStudents,
+                child: ListView.builder(
+                  itemCount: students.length,
+                  itemBuilder: (context, index) {
+                    final s = students[index];
+                    final name = s["name"] != null && s["name"].toString().trim().isNotEmpty
+                        ? s["name"].toString()
+                        : "Unnamed Student";
 
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.indigo.shade100,
-                  child: Text(
-                    name[0].toUpperCase(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.indigo,
-                    ),
-                  ),
-                ),
-                title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: Text("${s["roll_no"] ?? 'No Roll'} · ${s["branch"] ?? 'No Branch'}"),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("${s["cgpa"] ?? 'N/A'}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.indigo),
-                      tooltip: "Edit Student",
-                      onPressed: () async {
-                        // Build a sanitized student map for the edit screen
-                        final studentMap = Map<String, dynamic>.from(s);
-                        studentMap["name"] = name == "Unnamed Student" ? "" : name;
-
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => AdminEditStudentScreen(studentData: studentMap),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.indigo.shade100,
+                          child: Text(
+                            name[0].toUpperCase(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.indigo,
+                            ),
                           ),
-                        );
-                        if (result == true) {
-                          setState(() => isLoading = true);
-                          _fetchStudents();
-                        }
-                      },
-                    ),
-                  ],
+                        ),
+                        title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                        subtitle: Text("${s["roll_no"] ?? 'No Roll'} · ${s["branch"] ?? 'No Branch'}"),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text("${s["cgpa"] ?? 'N/A'}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.indigo),
+                              tooltip: "Edit Student",
+                              onPressed: () async {
+                                // Build a sanitized student map for the edit screen
+                                final studentMap = Map<String, dynamic>.from(s);
+                                studentMap["name"] = name == "Unnamed Student" ? "" : name;
+
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => AdminEditStudentScreen(studentData: studentMap),
+                                  ),
+                                );
+                                if (result == true) {
+                                  setState(() => isLoading = true);
+                                  _fetchStudents();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-            );
-          },
-        ),
-      ),
+              )
+          ),
     );
   }
 }

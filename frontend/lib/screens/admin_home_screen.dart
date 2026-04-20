@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../services/admin_service.dart';
+import 'admin_add_student_screen.dart';
+import 'admin_add_company_screen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   const AdminHomeScreen({super.key});
@@ -217,6 +219,35 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             const SizedBox(height: 20),
           ],
 
+          // QUICK ACTIONS
+          const Text("Quick Actions",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _buildActionCard(
+                "Add Student",
+                Icons.person_add,
+                Colors.indigo,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminAddStudentScreen()),
+                ),
+              ),
+              const SizedBox(width: 16),
+              _buildActionCard(
+                "Add Company",
+                Icons.add_business,
+                Colors.blue.shade900,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminAddCompanyScreen()),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
           // RECENT ACTIVITY
           const Text("Recent Activity",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -254,6 +285,32 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       ),
     );
   }
+
+  Widget _buildActionCard(String title, IconData icon, Color color, VoidCallback onTap) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: color.withOpacity(0.2)),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, size: 28, color: color),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
-
-
